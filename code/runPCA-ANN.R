@@ -33,8 +33,8 @@ projData <- projData[, 1:nPrinComps]
 new.train.data <- projData[1:nrow(train.data), ]
 new.train.data <- as.data.frame(new.train.data)
 new.train.data <- cbind(new.train.data, class = Y.factor)
-model.ann <- nnet(class ~ ., data = new.train.data, size = 20,
-                  linout = TRUE, MaxNWts = 3000)
+model.ann <- nnet(class ~ ., data = new.train.data, size = 250,
+                  linout = TRUE, MaxNWts = 300000)
 
 new.test.data <- projData[(nrow(train.data)+1):nrow(projData), ]
 preds <- predict(model.ann, new.test.data)
@@ -43,5 +43,5 @@ preds <- predict(model.ann, new.test.data)
 cat.preds <- max.col(preds)
 pred.data <- data.frame(Id = 1:nrow(test.data), Category = cat.preds)
 
-out.filename <- "./data/ANN-PCA.csv"
+out.filename <- paste("./data/ANN-PCA-", nPrinComps, ".csv", sep = "")
 write.csv(pred.data, file = out.filename, row.names = FALSE)
