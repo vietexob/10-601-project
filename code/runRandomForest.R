@@ -39,7 +39,7 @@ for(i in 1:nFolds) {
   subset.train <- as.data.frame(trainingSet)
   subset.train <- cbind(subset.train, class = trainingLabels)
   
-  model.rf <- randomForest(class ~ ., data = subset.train, ntree = 500,
+  model.rf <- randomForest(class ~ ., data = subset.train, ntree = 600,
                            proximity = TRUE, importance = TRUE)
   testSet <-  subset(new.train.data, id %in% c(i))
   prediction <- predict(model.rf, testSet)
