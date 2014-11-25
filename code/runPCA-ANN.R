@@ -45,7 +45,7 @@ for(i in 1:nFolds) {
   subset.train <- as.data.frame(trainingSet)
   subset.train <- cbind(subset.train, class = trainingLabels)
   
-  model.ann <- nnet(class ~ ., data = subset.train, size = 100,
+  model.ann <- nnet(class ~ ., data = subset.train, size = 200,
                     linout = TRUE, MaxNWts = 60000, decay = 0.5)
   testSet <-  subset(projData, id %in% c(i))
   prediction <- predict(model.ann, testSet)
