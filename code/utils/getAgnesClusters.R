@@ -20,5 +20,6 @@ getAgnesClusters <- function(data.matrix, eigenList, nPrinComps=2,
   Cluster <- cutree(cluster.ward, K)
   data.cl <- cbind(projData, Cluster)
   data.cl <- as.data.frame(data.cl)
+  
   return(data.cl)
 }

@@ -2,27 +2,49 @@ rm(list = ls())
 
 require(bigmemory)
 require(e1071)
+require(plyr)
 
 source("./code/utils/showImage.R")
 
 X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/X_train.csv"
 X.train <- read.big.matrix(filename = X.train.filename, type = "double")
-
-X.test.filename <- "../../../Dropbox/CMU/ML 601/project/data/X_test.csv"
-X.test <- read.big.matrix(filename = X.test.filename, type = "double")
+train.data <- as.matrix(X.train)
 
 Y.train.filename <- "~/Dropbox/CMU/ML 601/project/data/Y_train.csv"
 Y.train <- read.csv(file = Y.train.filename, header = FALSE)
 Y.factor <- as.factor(Y.train$V1)
 
-train.data <- as.matrix(X.train)
-new.train.data <- as.data.frame(train.data)
-new.train.data <- cbind(new.train.data, class = Y.factor)
-test.data <- as.matrix(X.test)
+## Perform K-fold cross validation ##
+nFolds <- 5
+id <- sample(1:nFolds, nrow(train.data), replace = TRUE)
+list <- 1:nFolds
+predictions <- data.frame()
 
-model.svm <- svm(class ~ ., data = new.train.data, kernel = "radial")
-preds <- predict(model.svm, test.data)
-pred.data <- data.frame(Id = 1:length(preds), Category = preds)
+# Create a progress bar to show the status of CV
+progress.bar <- create_progress_bar("text")
+progress.bar$init(nFolds)
+ptm <- proc.time()
+for(i in 1:nFolds) {
+  trainingSet <- subset(train.data, id %in% list[-i])
+  trainingLabels <- Y.factor[id %in% list[-i]]
+  subset.train <- as.data.frame(trainingSet)
+  subset.train <- cbind(subset.train, class = trainingLabels)
+  
+  model.svm <- svm(class ~ ., data = subset.train, kernel = "radial")
+  testSet <-  subset(train.data, id %in% c(i))
+  prediction <- predict(model.svm, testSet)
+  
+  testLabels <- Y.factor[id %in% c(i)]
+  prediction.data <- data.frame(Predict = prediction, Actual = testLabels)
+  predictions <- rbind(predictions, prediction.data)
+  accuracy <- sum(prediction == testLabels) / length(testLabels) * 100
+  print(paste("Accuracy = ", round(accuracy, 2), "%", sep = ""))
+  
+  progress.bar$step()
+}
+print("Total Time on K-fold CV:")
+print((proc.time() - ptm))
 
-out.filename <- "./data/testSVM.csv"
-write.csv(pred.data, file = out.filename, row.names = FALSE)
+tot.accuracy <- sum(predictions$Predict == predictions$Actual) / nrow(predictions) * 100
+print(paste("Total Accuracy = ", round(tot.accuracy, 2), "%", sep = ""))
+print(table(predictions))
