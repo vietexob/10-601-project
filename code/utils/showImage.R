@@ -1,8 +1,7 @@
-showImage <- function(row.image) {
+showImage <- function(row.image, nRows=32, nCols=32) {
   # Reads a row vector of the data matrix and displays it as an image
   require(grid)
-  nRows <- nCols <- 32
-  len <- 1024
+  len <- nRows * nCols
   
   red.img <- row.image[1:len]
   red.matrix <- matrix(data = red.img, nrow = nRows, ncol = nCols, byrow = FALSE)
