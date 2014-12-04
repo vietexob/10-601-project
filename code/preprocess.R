@@ -32,6 +32,27 @@ id <- sample(1:nFolds, nrow(train.data), replace = TRUE)
 list <- 1:nFolds
 predictions <- data.frame()
 
+## Do all the transformation and stuff here!
+## Extract 10 random patches per image ##
+randPatches <- extractPatches(train.data, nPatchesPerImg, rf.size, n)
+
+## Normalize those random patches - NOTE: This may crash the whitening
+# randPatches <- t(apply(randPatches, 1, scale))
+## Whiten the patches
+randPatches <- whiten(randPatches)$U
+## Learn the K-means centroids
+kMeans.centers <- kmeans(randPatches, centers = nCentroids, iter.max = 100)$centers
+
+## Convolutional extraction
+rowIndices <- colIndices <- 1:(n-rf.size+1)
+patches <- extractPatches(train.data, nPatches, rf.size, n, rowIndices, colIndices)
+
+## Compute the Euclidean distance between each patch and centroids
+fMatrix <- getFeatureMatrix(patches, nCentroids, kMeans.centers)
+## Get the new image representation
+nDivs <- 4
+fData <- getImgRepresentation(fMatrix, nrow(train.data), nDivs, nCentroids, nPatches)
+
 # Create a progress bar to show the status of CV
 progress.bar <- create_progress_bar("text")
 progress.bar$init(nFolds)
@@ -39,27 +60,8 @@ ptm <- proc.time()
 for(i in 1:nFolds) {
   ## Extract the training set
   trainingSet <- subset(train.data, id %in% list[-i])
+  testSet <-  subset(train.data, id %in% c(i))
   
-  ## Extract 10 random patches per image ##
-  randPatches <- extractPatches(trainingSet, nPatchesPerImg, rf.size, n)
-  
-  ## Normalize those random patches - NOTE: This may crash the whitening
-#   randPatches <- t(apply(randPatches, 1, scale))
-  ## Whiten the patches
-  randPatches <- whiten(randPatches)$U
-  ## Learn the K-means centroids
-  kMeans.centers <- kmeans(randPatches, centers = nCentroids, iter.max = 100)$centers
-  
-  ## Convolutional extraction
-  rowIndices <- colIndices <- 1:(n-rf.size+1)
-  patches <- extractPatches(trainingSet, nPatches, rf.size, n, rowIndices, colIndices)
-  
-  ## Compute the Euclidean distance between each patch and centroids
-  fMatrix <- getFeatureMatrix(patches, nCentroids, kMeans.centers)
-  ## Get the new image representation
-  nDivs <- 4
-  fTrainingSet <- getImgRepresentation(fMatrix, nrow(trainingSet), nDivs,
-                                       nCentroids, nPatches)
   
   trainingLabels <- Y.factor[id %in% list[-i]]
   subset.train <- as.data.frame(fTrainingSet)
@@ -67,11 +69,6 @@ for(i in 1:nFolds) {
   
   model.svm <- svm(class ~ ., data = subset.train, kernel = "radial")
   
-  testSet <-  subset(train.data, id %in% c(i))
-  testPatches <- extractPatches(testSet, nPatches, rf.size, n, rowIndices, colIndices)
-  fTestMatrix <- getFeatureMatrix(testPatches, nCentroids, kMeans.centers)
-  fTestSet <- getImgRepresentation(fTestMatrix, nrow(testSet), nDivs,
-                                   nCentroids, nPatches)
   prediction <- predict(model.svm, fTestSet)
   
   testLabels <- Y.factor[id %in% c(i)]
