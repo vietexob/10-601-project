@@ -94,7 +94,7 @@ for(i in 1:nFolds) {
   predictions <- rbind(predictions, prediction.data)
   accuracy <- sum(prediction == testLabels) / length(testLabels) * 100
   accuracy0 <- sum(prediction0 == testLabels) / length(testLabels) * 100
-
+  
   print(paste("Accuracy = ", round(accuracy, 2), "%", sep = ""))
   print(paste("Accuracy0 =", round(accuracy0, 2), "%", sep = ""))
   progress.bar$step()

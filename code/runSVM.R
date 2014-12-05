@@ -6,7 +6,7 @@ require(plyr)
 
 source("./code/utils/showImage.R")
 
-X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/X_train.csv"
+X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_3_std.csv"
 X.train <- read.big.matrix(filename = X.train.filename, type = "double")
 train.data <- as.matrix(X.train)
 
@@ -30,7 +30,7 @@ for(i in 1:nFolds) {
   subset.train <- as.data.frame(trainingSet)
   subset.train <- cbind(subset.train, class = trainingLabels)
   
-  model.svm <- svm(class ~ ., data = subset.train, kernel = "radial")
+  model.svm <- svm(class ~ ., data = subset.train, kernel = "linear")
   testSet <-  subset(train.data, id %in% c(i))
   prediction <- predict(model.svm, testSet)
   
