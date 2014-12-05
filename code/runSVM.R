@@ -5,6 +5,7 @@ require(e1071)
 require(plyr)
 
 source("./code/utils/showImage.R")
+source("./code/utils/printConfusions.R")
 
 X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_3_std.csv"
 X.train <- read.big.matrix(filename = X.train.filename, type = "double")
@@ -47,4 +48,7 @@ print((proc.time() - ptm))
 
 tot.accuracy <- sum(predictions$Predict == predictions$Actual) / nrow(predictions) * 100
 print(paste("Total Accuracy = ", round(tot.accuracy, 2), "%", sep = ""))
-print(table(predictions))
+
+pred.table <- table(predictions)
+print(pred.table)
+printConfusions(pred.table)
