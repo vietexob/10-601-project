@@ -1,13 +1,13 @@
 rm(list = ls())
 
-require(bigmemory)
-require(e1071)
-require(plyr)
+library(e1071)
+library(nnet)
+library(bigmemory)
+library(plyr)
 
-source("./code/utils/showImage.R")
 source("./code/utils/printConfusions.R")
 
-X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_std.csv"
+X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_3_std.csv"
 X.train <- read.big.matrix(filename = X.train.filename, type = "double")
 train.data <- as.matrix(X.train)
 
@@ -31,11 +31,18 @@ for(i in 1:nFolds) {
   subset.train <- as.data.frame(trainingSet)
   subset.train <- cbind(subset.train, class = trainingLabels)
   
-  model.svm <- svm(class ~ ., data = subset.train, kernel = "linear", cost = 200)
+  model.svm <- svm(class ~ ., data = subset.train, kernel = "linear")
+  model.nb <- naiveBayes(class ~ ., data = subset.train)
+  
   testSet <-  subset(train.data, id %in% c(i))
-  prediction <- predict(model.svm, testSet)
+  prediction.svm <- predict(model.svm, testSet)
+  prediction.nb <- predict(model.nb, testSet)
   
   testLabels <- Y.factor[id %in% c(i)]
+  meta.data <- data.frame(class = testLabels, SVM = prediction.svm, NB = prediction.nb)
+  meta.model <- multinom(class ~ ., data = meta.data)
+  prediction <- predict(meta.model, newdata = meta.data)
+  
   prediction.data <- data.frame(Predict = prediction, Actual = testLabels)
   predictions <- rbind(predictions, prediction.data)
   accuracy <- sum(prediction == testLabels) / length(testLabels) * 100
