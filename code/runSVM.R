@@ -31,7 +31,7 @@ for(i in 1:nFolds) {
   subset.train <- as.data.frame(trainingSet)
   subset.train <- cbind(subset.train, class = trainingLabels)
   
-  model.svm <- svm(class ~ ., data = subset.train, kernel = "linear", cost = 200)
+  model.svm <- svm(class ~ ., data = subset.train, kernel = "linear")
   testSet <-  subset(train.data, id %in% c(i))
   prediction <- predict(model.svm, testSet)
   

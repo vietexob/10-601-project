@@ -5,6 +5,7 @@ require(randomForest)
 require(plyr)
 
 source("./code/utils/showImage.R")
+source("./code/utils/printConfusions.R")
 
 X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_std.csv"
 X.train <- read.big.matrix(filename = X.train.filename, type = "double")
