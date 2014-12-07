@@ -63,37 +63,16 @@ table(true = test$Species, predicted = predict(model.nnet, test, type = "class")
 ?nnet
 quit()
 setwd("./Documents/workspace/601-project-new/")
-source("./code/test.R")
-i
-source("./code/test.R")
-i
-i
-imageRGB
-imageRGB.Cl
-source("./code/test.R")
-i
-?kmeanspp
+list.files()
+source("./code/runClassifier.R")
 ls()
-source("./code/test.R")
-i
-K
-source("./code/test.R")
-i
-?kmeanspp
-mr(list = ls())
-rm(list = ls())
-source("./code/test.R")
-source("./code/test.R")
-dim(new.train.data)
-head(new.train.data)
-names(new.train.data)
-length(new.features)
-names(new.features)
-new.features
-imageRGB.Cl$centers
-?unroll
-c(t(imageRGB.Cl$centers))
-getwd()
-source("./code/runRandomForest.R")
-ptm
+train.preds
+out.filename
+model.nb
+dim(train.data)
+ncol(train.data) == ncol(test.data)
+ncol(train.data)
+ncol(test.data)
+ncol(train.data)-1 == ncol(test.data)
+source("/Users/larcuser/Documents/workspace/601-project-new/code/runClassifier.R")
 quit()
