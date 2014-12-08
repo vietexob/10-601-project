@@ -25,7 +25,7 @@ ptm <- proc.time()
 # model.svm <- svm(class ~ ., data = train.data, kernel = "linear")
 # model.nb <- naiveBayes(class ~ ., data = train.data)
 # model.mlr <- multinom(class ~ ., data = train.data, MaxNWts=50000, decay=0.5)
-model.rf <- randomForest(class ~ ., data = train.data, ntree = 500,
+model.rf <- randomForest(class ~ ., data = train.data, ntree = 400,
                          proximity = TRUE, importance = TRUE)
 print("Training time:")
 print((proc.time() - ptm))
