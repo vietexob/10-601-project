@@ -32,17 +32,16 @@ for(i in 1:nFolds) {
   subset.train <- cbind(subset.train, class = trainingLabels)
   
   model.svm <- svm(class ~ ., data = subset.train, kernel = "linear")
-  model.nb <- naiveBayes(class ~ ., data = subset.train)
+#   model.nb <- naiveBayes(class ~ ., data = subset.train)
   model.mlr <- multinom(class ~ ., data = subset.train, MaxNWts=40000, decay=0.5)
   
   testSet <-  subset(train.data, id %in% c(i))
   prediction.svm <- predict(model.svm, testSet)
-  prediction.nb <- predict(model.nb, testSet)
+#   prediction.nb <- predict(model.nb, testSet)
   prediction.mlr <- predict(mode.mlr, testSet)
   
   testLabels <- Y.factor[id %in% c(i)]
-  meta.data <- data.frame(class = testLabels, SVM = prediction.svm,
-                          NB = prediction.nb, MLR = prediction.mlr)
+  meta.data <- data.frame(class = testLabels, SVM = prediction.svm, MLR = prediction.mlr)
   meta.model <- multinom(class ~ ., data = meta.data)
   prediction <- predict(meta.model, newdata = meta.data)
   

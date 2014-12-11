@@ -7,7 +7,7 @@ require(plyr)
 source("./code/utils/showImage.R")
 source("./code/utils/printConfusions.R")
 
-X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_std.csv"
+X.train.filename <- "../../../Dropbox/CMU/ML 601/project/data/preprocessed_X_train_final.csv"
 X.train <- read.big.matrix(filename = X.train.filename, type = "double")
 train.data <- as.matrix(X.train)
 
@@ -31,7 +31,7 @@ for(i in 1:nFolds) {
   subset.train <- as.data.frame(trainingSet)
   subset.train <- cbind(subset.train, class = trainingLabels)
   
-  model.mlr <- multinom(class ~ ., data = subset.train, MaxNWts=30000, decay=0.5)
+  model.mlr <- multinom(class ~ ., data = subset.train, MaxNWts=40000, decay=0.5)
   testSet <-  subset(train.data, id %in% c(i))
   prediction <- predict(model.mlr, testSet)
   
